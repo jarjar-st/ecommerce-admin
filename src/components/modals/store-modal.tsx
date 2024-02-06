@@ -7,6 +7,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Button } from "../ui/button";
+import { useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
     name: z.string().min(3, {message: "El nombre debe tener al menos 3 caracteres"}),
@@ -14,6 +17,8 @@ const formSchema = z.object({
 
 export const StoreModal = () => {
     const storeModal = useStoreModal();
+
+    const [loading, setLoading] = useState(false);
 
     const form = useForm<z.infer<typeof formSchema>>(
         {
@@ -26,6 +31,18 @@ export const StoreModal = () => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         console.log(values);
+        try {
+            setLoading(true);
+            const resposne = await axios.post("/api/stores", values);
+            toast.success("Tienda creada exitosamente");
+            
+        } catch (error) {
+            toast.error("Ocurrio un error al crear la tienda");
+
+        }finally{
+            setLoading(false);
+
+        }
     }
 
     return (
@@ -44,10 +61,11 @@ export const StoreModal = () => {
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>name</FormLabel>
+                                        <FormLabel>Nombre</FormLabel>
                                         <FormControl>
                                             <input
                                                 type="text"
+                                                disabled={loading}
                                                 placeholder="Nombre de la tienda"
                                                 {...field}
                                                 className="w-full"
@@ -58,8 +76,20 @@ export const StoreModal = () => {
                                 )}
                             />
                             <div className=" pt-6 space-x-2 flex items-center justify-end w-full">
-                                    <Button onClick={storeModal.onClose} variant={"outline"}>Cancelar</Button>
-                                    <Button type="submit">Continuar</Button>
+                                    <Button 
+                                    onClick={storeModal.onClose} 
+                                    variant={"outline"}
+                                    disabled={loading}
+                                    >
+                                        Cancelar
+                                    </Button>
+
+                                    <Button 
+                                    type="submit"
+                                    disabled={loading}
+                                    >
+                                        Continuar
+                                    </Button>
                             </div>
                         </form>
                     </Form>
