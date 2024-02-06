@@ -17,8 +17,7 @@ export default function SetupPage() {
   }, [isOpen, onOpen]);
 
   return (
-    <div className="w-full p-4">
-    </div>
-    
+    null
+
   );
 }

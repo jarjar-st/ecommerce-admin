@@ -33,8 +33,17 @@ export const StoreModal = () => {
         console.log(values);
         try {
             setLoading(true);
-            const resposne = await axios.post("/api/stores", values);
-            toast.success("Tienda creada exitosamente");
+            const response = await axios.post("/api/stores", values);
+            // toast.success("Tienda creada exitosamente");
+            
+            /*
+            No se usa redirec de NEXTjs porque puede ser que la
+            base datos no este lista, mientras que al usar Window
+            se hace una refhesh de la pagina por lo que la base de datos
+            se vuelve a cargar y se asegura que se muestre la tienda
+            */
+            window.location.assign(`/${response.data.id}`)
+
             
         } catch (error) {
             toast.error("Ocurrio un error al crear la tienda");
