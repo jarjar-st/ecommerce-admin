@@ -5,8 +5,11 @@ import { useStoreModal } from "@/hooks/use-store-modal";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { Store as StoreIcon} from "lucide-react";
+import { Check, ChevronsUpDown, PlusCircle, Store as StoreIcon} from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PopoverContent } from "@radix-ui/react-popover";
+import { Command, CommandGroup, CommandInput, CommandList, CommandSeparator, CommandItem, CommandEmpty } from "./ui/command";
+// import { ,  } from "cmdk";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
@@ -52,14 +55,55 @@ function StoreSwitcher({
         aria-expanded={open}
         aria-label="Store switcher"
         className={cn(
-          className,
-          "flex items-center"
+          "w-[200px] justify-between",
+          className
         )}
         >
           <StoreIcon className=" mr-2 h-4 w-4"/>
+          {currentStore?.label}
+          <ChevronsUpDown className=" ml-auto h-4 w-4 shrink-0 opacity-50"/>
         </Button>
       </PopoverTrigger>
+      <PopoverContent className="w-[200px] p-0">
+          <Command>
+            <CommandList>
+              <CommandInput placeholder="Buscar tu Tienda..."/>
+              <CommandEmpty>No se encontro la tienda</CommandEmpty>
+              <CommandGroup heading="Tiendas">
+                {formattedItems.map((item) => (
+                  <CommandItem
+                  key={item.value}
+                  onSelect={() => onStoreSelect(item)}
+                  className="text-sm"
+                  >
+                    <StoreIcon className=" mr-2 h-4 w-4"/>
+                    {item.label}
+                    <Check
+                      className= {cn(
+                        "ml-auto h-4 w-4",
+                        currentStore?.value === item.value ? "opacity-100" : "opacity-0"
+                      )}/>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+            <CommandSeparator/>
+            <CommandList>
+              <CommandGroup>
+                <CommandItem
+                onSelect={() => {
+                  setOpen(false);
+                  storeModel.onOpen();
+                }}
+                >
+                  <PlusCircle className=" mr-2 h-5 w-5"/>
+                  Crear Nueva Tienda
 
+                </CommandItem>
+              </CommandGroup>
+            </CommandList>
+          </Command>
+      </PopoverContent>
     </Popover>
   )
 }
